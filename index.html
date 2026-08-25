@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ابتسمي ✨</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            background-image: linear-gradient(to top, #fad0c4 0%, #ffd1ff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #4a4a4a;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            color: #d81b60;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Message Box Styles */
+        .message-box {
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff0f5;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px dashed #ffb6c1;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #c2185b;
+            transition: all 0.3s ease;
+        }
+
+        button {
+            background: #ff4081;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-family: 'Cairo', sans-serif;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        button:hover {
+            background: #e91e63;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* Game Styles */
+        .game-section {
+            margin-top: 40px;
+        }
+
+        .game-board {
+            width: 100%;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid #ffb6c1;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .score-board {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #d81b60;
+            margin-bottom: 10px;
+        }
+
+        .target {
+            position: absolute;
+            font-size: 2.5em;
+            user-select: none;
+            cursor: pointer;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.1s;
+        }
+
+        .target:active {
+            transform: scale(0.5);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .pop-text {
+            position: absolute;
+            color: #ff4081;
+            font-weight: bold;
+            font-size: 1.2em;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>مرحباً يا منّة 🌸</h1>
+        <p>خذي نفساً عميقاً.. هذه المساحة صُنعت خصيصاً لتفصلك عن العالم قليلاً.</p>
+    </div>
+
+    <div class="container">
+        <!-- قسم الرسايل الإيجابية -->
+        <h3 style="color: #880e4f;">رسالة لكِ اليوم 💌</h3>
+        <div class="message-box" id="msg-box">
+            اضغطي على الزر بالأسفل لتقرأي شيئاً يخصك!
+        </div>
+        <button onclick="generateMessage()">رسالة سعادة ✨</button>
+    </div>
+
+    <div class="container game-section">
+        <!-- قسم اللعبة -->
+        <h3 style="color: #880e4f;">لعبة تغيير المود 🎈</h3>
+        <p>اضغطي على البالونات والقلوب قبل أن تختفي!</p>
+        <div class="score-board">النقاط: <span id="score">0</span></div>
+        <div class="game-board" id="game-board"></div>
+    </div>
+
+    <script>
+        // مصفوفة الرسائل الإيجابية
+        const messages = [
+            "أنتِ شخص رائع جداً، وتستحقين كل الأشياء الجميلة في هذه الحياة.",
+            "ابتسامتك تصنع فرقاً، لا تنسي أن تبتسمي اليوم 😊",
+            "خذي وقتك في الراحة، العالم يمكنه الانتظار.. صحتك وسعادتك أهم.",
+            "أنتِ أقوى مما تتخيلين، وأجمل مما تتصورين 💖",
+            "كل يوم هو بداية جديدة، كوني فخورة بكل خطوة تخطينها.",
+            "تذكري دائماً أن هناك من يتمنى لكِ الخير ويسعد لرؤيتك سعيدة.",
+            "لا بأس إن لم تكوني مثالية، أنتِ مميزة بطريقتك الخاصة ✨",
+            "دائماً بعد أيام التعب تأتي أيام من الراحة والجبر، تفاءلي بالخير 🌸",
+            "أنتِ تستحقين أن تُعاملي بلطف وحب دائماً.",
+            "غمّضي عينيك، خذي نفساً عميقاً، وتذكري أن كل شيء سيكون بخير."
+        ];
+
+        // دالة تغيير الرسالة
+        function generateMessage() {
+            const msgBox = document.getElementById('msg-box');
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            
+            // تأثير حركي خفيف عند تغيير الرسالة
+            msgBox.style.transform = 'scale(0.9)';
+            msgBox.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                msgBox.innerText = messages[randomIndex];
+                msgBox.style.transform = 'scale(1)';
+                msgBox.style.opacity = '1';
+            }, 150);
+        }
+
+        // ------------------ برمجة اللعبة ------------------
+        let score = 0;
+        const gameBoard = document.getElementById('game-board');
+        const scoreDisplay = document.getElementById('score');
+        const targets = ['🎈', '💖', '🌸', '🎀', '🧸', '✨'];
+
+        function spawnTarget() {
+            const target = document.createElement('div');
+            target.className = 'target';
+            
+            // اختيار شكل عشوائي
+            const randomIcon = targets[Math.floor(Math.random() * targets.length)];
+            target.innerText = randomIcon;
+
+            // تحديد مكان عشوائي داخل الصندوق
+            const boardWidth = gameBoard.clientWidth;
+            const boardHeight = gameBoard.clientHeight;
+            
+            const randomX = Math.floor(Math.random() * (boardWidth - 50));
+            const randomY = Math.floor(Math.random() * (boardHeight - 50));
+
+            target.style.left = randomX + 'px';
+            target.style.top = randomY + 'px';
+
+            // عند الضغط على الهدف
+            target.onclick = function(e) {
+                score += 10;
+                scoreDisplay.innerText = score;
+                
+                // إضافة تأثير كلمة (رائع!) عند الضغط
+                createPopText(e.clientX, e.clientY);
+                
+                this.remove();
+            };
+
+            gameBoard.appendChild(target);
+
+            // إخفاء الهدف بعد مدة عشوائية (بين ثانية وثانيتين)
+            const lifespan = Math.random() * 1000 + 1000;
+            setTimeout(() => {
+                if(target.parentElement) {
+                    target.remove();
+                }
+            }, lifespan);
+        }
+
+        // تأثير الكلمة المتطايرة عند كسب النقاط
+        function createPopText(x, y) {
+            const popText = document.createElement('div');
+            popText.className = 'pop-text';
+            popText.innerText = '+10';
+            
+            // ضبط مكان الكلمة بناءً على مكان الماوس/اللمس
+            const rect = gameBoard.getBoundingClientRect();
+            const relX = x - rect.left;
+            const relY = y - rect.top;
+
+            popText.style.left = relX + 'px';
+            popText.style.top = relY + 'px';
+
+            gameBoard.appendChild(popText);
+
+            setTimeout(() => {
+                popText.remove();
+            }, 1000);
+        }
+
+        // تشغيل اللعبة بإنشاء هدف كل 800 جزء من الثانية
+        setInterval(spawnTarget, 800);
+
+    </script>
+</body>
+</html>
